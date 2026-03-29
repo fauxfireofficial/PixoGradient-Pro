@@ -3525,9 +3525,12 @@ if (!checkImageLimit()) {
         if (secondsLeft <= 0) clearInterval(timerInterval);
     }, 1000);
 
-    const uniqueID = Math.floor(Math.random() * 1000000) + "_" + Date.now();
-    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${currentW}&height=${currentH}&nologo=true&seed=${uniqueID}`;
+  const POL_API_KEY = "sk_qRyQCneKnSFcs8upwN5gaMzhyFypPWJQ";
 
+const uniqueSeed = Math.floor(Math.random() * 2147483647); 
+
+
+const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${currentW}&height=${currentH}&nologo=true&seed=${uniqueSeed}&model=flux&key=${POL_API_KEY}`;
     setTimeout(() => {
         clearInterval(timerInterval);
         fetch(imageUrl)
