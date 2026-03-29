@@ -1,0 +1,3599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Image Gradient Comparison</title>
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src * data: blob: 'unsafe-inline' 'unsafe-eval';
+    img-src * data: blob:;
+    connect-src *;
+    style-src * 'unsafe-inline';
+    script-src * 'unsafe-inline' 'unsafe-eval';
+    ">
+
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); */
+            background: #0c2129;
+            /* background: #08161b; */
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            color: #ffc400;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            /* text-shadow: 0 0 10px rgba(255, 153, 0, 0.7); */
+            letter-spacing: 1px;
+            /* font-family: 'MedievalSharp', cursive; */
+        }
+
+        .header p {
+            color: #ffd900;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            background: #121c26;
+            padding: 25px;
+            border-radius: 20px;
+           
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+        }
+
+        .upload-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 153, 0, 0.2);
+        }
+
+        .upload-box input {
+            display: none;
+        }
+
+        .upload-box label,
+        .upload-box button {
+            background-color: #ff9900;
+            color: #000000;
+            border: none;
+            /* border: 1px solid orange; */
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            /* text-shadow: 0 0 5px #000; */
+            /* box-shadow: 0 5px 15px rgba(255, 90, 0, 0.5); */
+            transition: all 0.3s ease;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            /* Har kone par ek chota notch */
+
+
+        }
+
+
+        .upload-box label:hover,
+        .upload-box button:hover {
+            transform: translateY(-3px);
+            background-color: #ff4500;
+            box-shadow: 0 2px 5px rgba(255, 90, 0, 0.7);
+        }
+
+        .upload-box label:active,
+        .upload-box button:active {
+            transform: translateY(1px);
+        }
+
+        .gradient-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .gradient-presets-container {
+            width: 100%;
+            overflow-x: auto;
+            /* Enable horizontal scrolling */
+            padding: 10px 0;
+            white-space: nowrap;
+            /* Prevent items from wrapping */
+            -webkit-overflow-scrolling: touch;
+            /* Smooth scrolling on iOS */
+            scrollbar-width: none;
+            /* Hide scrollbar for Firefox */
+        }
+
+        .gradient-presets-container::-webkit-scrollbar {
+            display: none;
+            /* Hide scrollbar for Chrome, Safari, Opera */
+        }
+
+        .gradient-presets {
+            display: inline-flex;
+            /* Use inline-flex to keep all items in one line */
+            gap: 12px;
+            padding: 5px;
+        }
+
+        .gradient-presets button {
+            flex-shrink: 0;
+            /* Prevent buttons from shrinking */
+            width: 120px;
+            /* Fixed width for box type */
+            height: 70px;
+            /* Fixed height for box type */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            padding: 12px 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 14px;
+            
+            transition: all 0.3s ease;
+            /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); */
+            position: relative;
+            overflow: hidden;
+            /* font-family: 'MedievalSharp', cursive; */
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            /* Space between icon and text */
+            background: transparent;
+            /* Changed from #23233b to transparent */
+        }
+
+        .gradient-presets button>div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+            /* Ensure icon and text are above the gradient overlay */
+        }
+
+        .gradient-presets button i {
+            font-size: 1.8em;
+            /* Adjust icon size */
+            color: #ffcc00;
+            /* Icon color */
+            /* text-shadow: 0 0 8px rgba(255, 204, 0, 0.8); */
+        }
+
+        .gradient-presets button span {
+            font-size: 0.9em;
+            /* Adjust text size */
+            color: #fff;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .gradient-presets button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--button-gradient, linear-gradient(135deg, #ff4d4d, #ffa500));
+            /* Dynamic gradient */
+            opacity: 0;
+            /* Changed default opacity from 0.8 to 0 */
+            mix-blend-mode: multiply;
+            z-index: 0;
+        }
+
+        .gradient-presets button.active::before,
+        .gradient-presets button:hover::before {
+            opacity: 1;
+            /* Full opacity when active or hovered */
+        }
+
+        .gradient-presets button.active::before {
+            opacity: 1;
+            /* Ensure full opacity when active */
+        }
+
+        .gradient-presets button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gradient-presets button:hover {
+            transform: translateY(-3px);
+            /* box-shadow: 0 8px 20px rgba(255, 90, 0, 0.6); */
+            background: rgba(60, 60, 80, 0.9);
+            /* Keep background for hover for subtle effect */
+        }
+
+        .gradient-presets button:hover::after {
+            opacity: 1;
+        }
+
+        .gradient-presets button.active {
+            transform: scale(1.05);
+            /* box-shadow: 0 0 15px rgba(255, 200, 0, 0.8); */
+            border-color: #ffcc00;
+            background: rgba(60, 60, 80, 0.9);
+            /* Keep background for active for subtle effect */
+        }
+
+        .opacity-control,
+        .sharpen-control,
+        .brightness-control,
+        .contrast-control,
+        .saturation-control,
+        .vibrance-control,
+        .temperature-control {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            color: #fff;
+            align-items: center;
+        }
+
+        .opacity-control label,
+        .sharpen-control label,
+        .brightness-control label,
+        .contrast-control label,
+        .saturation-control label,
+        .vibrance-control label,
+        .temperature-control label {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .opacity-control input,
+        .sharpen-control input,
+        .brightness-control input,
+        .contrast-control input,
+        .saturation-control input,
+        .vibrance-control input,
+        .temperature-control input {
+            width: 100%;
+            max-width: 300px;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, #ff6600, #ffcc00);
+            border-radius: 10px;
+            outline: none;
+        }
+
+        .opacity-control input::-webkit-slider-thumb,
+        .sharpen-control input::-webkit-slider-thumb,
+        .brightness-control input::-webkit-slider-thumb,
+        .contrast-control input::-webkit-slider-thumb,
+        .saturation-control input::-webkit-slider-thumb,
+        .vibrance-control input::-webkit-slider-thumb,
+        .temperature-control input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            /* box-shadow: 0 0 10px rgba(255, 90, 0, 0.8); */
+            border: 2px solid #ff9900;
+        }
+
+        .opacity-value,
+        .sharpen-value,
+        .brightness-value,
+        .contrast-value,
+        .saturation-value,
+        .vibrance-value,
+        .temperature-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffcc00;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .image-controls-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 20px;
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-button {
+            background-color: #ff9900;
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            /* box-shadow: 0 4px 15px rgba(255, 153, 0, 0.4); */
+        }
+
+        .control-button:hover {
+            background-color: #ffae00;
+            transform: translateY(-2px);
+        }
+
+        .control-button.active {
+            background-color: #ff4500;
+            color: #fff;
+            /* box-shadow: 0 4px 20px rgba(255, 69, 0, 0.6); */
+        }
+
+        .control-slider {
+            display: none;
+            /* Hidden by default */
+            width: 80%;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-color: rgba(255, 153, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .control-slider input[type="range"] {
+            width: 70%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #ffcc00;
+            border-radius: 5px;
+            outline: none;
+            transition: opacity .2s;
+        }
+
+        .control-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff4500;
+            cursor: pointer;
+            /* box-shadow: 0 0 10px rgba(255, 69, 0, 0.8); */
+            border: 2px solid #ff9900;
+        }
+
+        .control-slider input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff4500;
+            cursor: pointer;
+            /* box-shadow: 0 0 10px rgba(255, 69, 0, 0.8); */
+            border: 2px solid #ff9900;
+        }
+
+        .control-slider .opacity-value,
+        .sharpen-value,
+        .brightness-value,
+        .contrast-value,
+        .saturation-value,
+        .vibrance-value,
+        .temperature-value {
+            color: #ffcc00;
+            font-size: 1.1rem;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 3/2;
+            overflow: hidden;
+            border: 5px solid transparent;
+            border-image: linear-gradient(45deg, #ff4500, #ffae00) 1;
+            /* box-shadow: 0 0 35px rgba(255, 90, 0, 0.7); */
+            border-radius: 18px;
+            background: #000;
+            display: none;
+            margin-top: 10px;
+            clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%);
+        }
+
+        .image-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        .image-before,
+        .image-after {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .label {
+            position: absolute;
+            top: 12px;
+            background: rgba(30, 0, 0, 0.6);
+            color: #ffcc00;
+            padding: 8px 16px;
+            border: 2px solid #ffae00;
+            border-radius: 8px;
+            font-size: 16px;
+            /* text-shadow: 0 0 6px #ff6600; */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(5px);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 90% 100%, 0 100%);
+        }
+
+        .image-before .label {
+            left: 12px;
+        }
+
+        .image-after .label {
+            right: 12px;
+        }
+
+        /* After overlay pseudo-element */
+        .image-after::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.85;
+            /* default opacity */
+            mix-blend-mode: multiply;
+        }
+
+        .comparison-slider {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .comparison-slider input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: ew-resize;
+            z-index: 10;
+        }
+
+        .drag-line {
+            position: absolute;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, #ffae00, #ff3300);
+            left: 50%;
+            transform: translateX(-50%);
+            transition: left 0.15s ease-out;
+            /* box-shadow: 0 0 20px rgba(255, 120, 0, 0.9); */
+            z-index: 9;
+        }
+
+        .drag-line span {
+            height: 48px;
+            width: 48px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            background: radial-gradient(circle at center, #ffae00, #ff3300);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* box-shadow: 0 0 25px rgba(255, 90, 0, 1); */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: glow 2s infinite alternate;
+        }
+
+        .drag-line span::before,
+        .drag-line span::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            border: 12px solid transparent;
+        }
+
+        .drag-line span::before {
+            border-right-color: #fff;
+            left: 35%;
+            transform: translateY(-50%);
+        }
+
+        .drag-line span::after {
+            border-left-color: #fff;
+            right: 35%;
+            transform: translateY(-50%);
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(255, 100, 0, 0.7); }
+  to { box-shadow: 0 0 25px rgba(255, 200, 0, 1); }
+} */
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(30, 30, 46, 0.9);
+            color: #ffcc00;
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 2px solid #ffae00;
+            /* font-family: 'MedievalSharp', cursive; */
+            font-size: 16px;
+            z-index: 10001;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            /* On-screen */
+            opacity: 1;
+            /* Fully visible */
+            pointer-events: auto;
+            /* Make it interactive when visible */
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                gap: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.9rem;
+                padding: 0 10px;
+            }
+
+            .control-panel {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .upload-box {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .upload-box label,
+            .upload-box button {
+                width: 100%;
+                max-width: 280px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .gradient-presets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gradient-presets button {
+                padding: 10px 5px;
+                font-size: 12px;
+            }
+
+            .image-wrapper {
+                border-width: 3px;
+                border-radius: 12px;
+            }
+
+            .label {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .drag-line span {
+                height: 36px;
+                width: 36px;
+            }
+
+            .drag-line span::before,
+            .drag-line span::after {
+                border-width: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .gradient-presets {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                padding: 15px 10px;
+            }
+        }
+
+        /* New styles for tab navigation */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 100vh;
+        }
+
+        .tab-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(30, 30, 46, 0.9);
+            padding: 10px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 153, 0, 0.3);
+            position: relative;
+            z-index: 100;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: #ffcc00;
+            padding: 10px 20px;
+            cursor: pointer;
+            /* font-family: 'MedievalSharp', cursive; */
+            font-size: 1.1rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            /* text-shadow: 0 0 5px rgba(255, 153, 0, 0.7); */
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 153, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: orange;
+            color: #000000;
+            /* box-shadow: 0 0 10px rgba(255, 153, 0, 0.7); */
+            transform: translateY(-2px);
+            font-weight: 500;
+        }
+
+
+        .view-section {
+            display: none;
+            width: 100%;
+            min-height: calc(100vh - 120px);
+            position: relative;
+        }
+
+        .view-section.active {
+            display: block !important;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* AI Chat specific styles */
+
+        #aiChatView {
+            padding: 5px !important;
+            background: #0c2129 !important;
+            min-height: 80vh !important;
+            width: 100% !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        #aiChatView h2 {
+            color: #ffd000 !important;
+            text-align: center !important;
+            /* font-family: 'MedievalSharp', cursive !important; */
+            margin-bottom: 20px !important;
+            font-size: 2rem !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        #aiChatView button {
+            background: #ff9900 !important;
+            color: rgb(10, 8, 8) !important;
+            border: none !important;
+            padding: 12px 20px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            min-width: 80px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+
+        }
+
+        #chatOutput {
+            height: 400px !important;
+            min-height: 400px !important;
+            max-height: 400px !important;
+            overflow-y: auto !important;
+            background: rgba(0, 0, 0, 0.3) !important;
+            margin: 10px 0 !important;
+            padding: 10px !important;
+            border-radius: 15px !important;
+            border: 2px solid rgba(255, 153, 0, 0.3) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 5px !important;
+            width: 100% !important;
+        }
+
+        #chatInput {
+            flex: 1 !important;
+            padding: 12px 15px !important;
+            border-radius: 8px !important;
+            border: 2px solid #ff9900 !important;
+            background: rgba(0, 0, 0, 0.7) !important;
+            color: white !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 16px !important;
+            outline: none !important;
+            transition: all 0.3s !important;
+        }
+
+        #chatInput:focus {
+            border-color: #ffcc00 !important;
+
+        }
+
+        #chatInput::placeholder {
+            color: #aaa !important;
+            opacity: 1 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        /* Label aur Button ke andar icon ko adjust karne ke liye */
+        .upload-box label.fas,
+        .upload-box button.fas {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            /* Icon aur text ke beech fasla */
+        }
+
+        /* Icon ka size aur position set karne ke liye */
+        .upload-box label.fas::before,
+        .upload-box button.fas::before {
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            font-size: 20px;
+            /* Icon ka size */
+        }
+
+        /* Fullscreen preview styles */
+        .fullscreen-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+            /* Hidden by default */
+        }
+
+        .fullscreen-preview img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .fullscreen-preview .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* About Us Page Styles */
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: #ccc;
+            /* Default star color */
+            cursor: pointer;
+        }
+
+        .star-rating .star {
+            padding: 5px;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .star-rating .star.selected,
+        .star-rating .star:hover {
+            color: #ffcc00;
+            /* Yellow for selected/hovered stars */
+        }
+
+        .star-rating .star:hover~.star {
+            color: #ccc;
+            /* Reset color for stars after hovered one */
+        }
+
+        #aboutUsView p,
+        #aboutUsView h2,
+        #aboutUsView h3,
+        #aboutUsView strong {
+            font-family: Arial, sans-serif;
+            /* Simpler font */
+            font-weight: normal;
+            /* Remove bold for paragraphs */
+            text-shadow: none;
+            /* Remove text shadow */
+            letter-spacing: normal;
+            /* Reset letter spacing */
+        }
+
+        #aboutUsView h2 {
+            font-size: 2em;
+            /* Adjust heading size */
+            margin-bottom: 15px;
+        }
+
+        #aboutUsView h3 {
+            font-size: 1.5em;
+            /* Adjust heading size */
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        #aboutUsView p {
+            font-size: 1em;
+            /* Adjust paragraph size */
+            line-height: 1.6;
+            /* Improve readability */
+        }
+
+        .social-share-tab {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(150%);
+            width: 95%;
+            /* Mobile ke liye behtar size */
+            max-width: 400px;
+            background: #1a1a2e !important;
+            /* Solid background rakhein */
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff9900;
+            z-index: 99999 !important;
+            /* Sabse zyada z-index */
+            overflow: hidden;
+            transition: all 0.5s ease;
+            display: block !important;
+            /* Visibility JS se control hogi */
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: none !important;
+            /* Kisi bhi qism ka blur khatam */
+        }
+
+        .social-share-tab.active {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .share-tab-header {
+            background: linear-gradient(90deg, #ff6600, #ff9900);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .share-tab-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-tab-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-tab-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .share-tab-content {
+            padding: 20px;
+        }
+
+        .share-message {
+            color: #ffcc00;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Social Platforms Grid */
+        .social-platforms {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 153, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+
+        }
+
+        .social-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 153, 0, 0.3);
+        }
+
+        .social-btn i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .social-btn span {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* Platform-specific colors */
+        .social-btn.whatsapp {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-color: #25D366;
+        }
+
+
+        .social-btn.telegram {
+            background: linear-gradient(135deg, #2AABEE, #229ED9);
+            border-color: #2AABEE;
+        }
+
+        .social-btn.sms {
+            background: linear-gradient(135deg, #34B7F1, #1E88E5);
+            border-color: #34B7F1;
+        }
+
+
+        .more-apps {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            border-color: #6c5ce7;
+        }
+
+        /* Share Actions */
+        .share-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .gallery-btn {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #0984e3, #0771c2);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .share-tip {
+            color: #aaa;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .share-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            /* Sirf dark background */
+            backdrop-filter: none !important;
+            /* Is line ko change karein */
+            z-index: 99998;
+            /* Tab se ek number kam */
+            display: none;
+        }
+
+        .share-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .social-platforms {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .share-actions {
+                flex-direction: column;
+            }
+
+            .social-share-tab {
+                width: 95%;
+                bottom: 10px;
+            }
+        }
+
+        /* Model buttons styling - YE NAYA CSS ADD KAREIN */
+        .model-btn {
+            padding: 10px 15px;
+            background: rgba(255, 153, 0, 0.2);
+
+            border-radius: 8px;
+            color: #ffcc00;
+            cursor: pointer;
+
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .model-btn.active {
+            background: #ff9900;
+            color: #000;
+
+
+        }
+
+        .model-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 153, 0, 0.4);
+        }
+
+        /* Generated images styling */
+        .generated-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ff9900;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .generated-image:hover {
+            transform: scale(1.05);
+        }
+
+        .image-prompt {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 5px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #photoEditorView:not(.active),
+        #aiChatView:not(.active),
+        #aboutUsView:not(.active) {
+            display: none !important;
+        }
+
+        /* Welcome Message */
+        .ai-welcome {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9), rgba(22, 33, 62, 0.9)) !important;
+            border-radius: 20px !important;
+            padding: 25px !important;
+            margin-bottom: 20px !important;
+            border: 2px solid rgba(255, 153, 0, 0.3) !important;
+            color: white !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .ai-welcome h3 {
+            color: #ff9900 !important;
+            text-align: center !important;
+            margin-bottom: 20px !important;
+            font-size: 1.5em !important;
+            /* font-family: 'MedievalSharp', cursive !important; */
+        }
+
+        .welcome-status {
+            background: rgba(0, 0, 0, 0.3) !important;
+            padding: 15px !important;
+            border-radius: 10px !important;
+            margin-bottom: 20px !important;
+            text-align: center !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .api-note {
+            color: #ffcc00 !important;
+            font-size: 14px !important;
+            margin-top: 10px !important;
+            padding: 10px !important;
+            background: rgba(255, 153, 0, 0.1) !important;
+            border-radius: 8px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .welcome-features h4 {
+            color: #ffcc00 !important;
+            margin-bottom: 15px !important;
+            text-align: center !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .features-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 15px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .feature-card {
+            background: rgba(255, 153, 0, 0.1) !important;
+            border: 1px solid rgba(255, 153, 0, 0.3) !important;
+            border-radius: 10px !important;
+            padding: 15px !important;
+            text-align: center !important;
+            transition: transform 0.3s !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) !important;
+            background: rgba(255, 153, 0, 0.2) !important;
+        }
+
+        .feature-icon {
+            font-size: 24px !important;
+            margin-bottom: 10px !important;
+            height: 30px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        .feature-text {
+            font-size: 14px !important;
+            color: #ccc !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .welcome-tips h4 {
+            color: #ffcc00 !important;
+            margin-bottom: 10px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+
+        .welcome-tips ul {
+            margin-left: 20px !important;
+            color: #aaa !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        .welcome-tips li {
+            margin-bottom: 8px !important;
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+        }
+
+        /* Chat Messages */
+        .chat-message-bubble {
+            margin: 12px 0 !important;
+            display: flex !important;
+            width: 100% !important;
+        }
+
+        .chat-message-bubble.user {
+            justify-content: flex-end !important;
+        }
+
+        .chat-message-bubble.ai,
+        .chat-message-bubble.loading {
+            justify-content: flex-start !important;
+        }
+
+        .user-message {
+            background: #ff9900 !important;
+            color: black !important;
+            padding: 12px 18px !important;
+            border-radius: 20px 20px 5px 20px !important;
+            max-width: 80% !important;
+            word-wrap: break-word !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 16px !important;
+            line-height: 1.5 !important;
+
+        }
+
+        .ai-message {
+            background: rgba(255, 153, 0, 0.15) !important;
+            color: white !important;
+            padding: 12px 18px !important;
+            border-radius: 20px 20px 20px 5px !important;
+            max-width: 80% !important;
+            word-wrap: break-word !important;
+            border: 1px solid rgba(255, 153, 0, 0.3) !important;
+            line-height: 1.6 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 16px !important;
+        }
+
+        .error-message {
+            background: rgba(255, 77, 77, 0.15);
+            color: #ff6b6b;
+            padding: 12px 18px;
+            border-radius: 12px;
+            max-width: 90%;
+            text-align: center;
+            border: 1px solid rgba(255, 77, 77, 0.3);
+        }
+
+        /* Loading Animation */
+        .loading-message {
+            background: rgba(255, 153, 0, 0.1);
+            padding: 15px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 153, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .typing-animation {
+            display: flex;
+            gap: 6px;
+        }
+
+        .typing-animation .dot {
+            width: 10px;
+            height: 10px;
+            background: #ff9900;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-animation .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-animation .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typingBounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.5;
+            }
+
+            40% {
+                transform: translateY(-10px);
+                opacity: 1;
+            }
+        }
+
+        .loading-text {
+            color: #aaa;
+            font-style: italic;
+        }
+
+        /* Generated Images */
+        .ai-image-result {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 153, 0, 0.3);
+        }
+
+        .generated-image-card {
+            text-align: center;
+        }
+
+        .generated-img {
+            max-width: 100%;
+            border-radius: 12px;
+            border: 3px solid #ff9900;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .image-meta {
+            margin-bottom: 20px;
+        }
+
+        .img-prompt {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .img-theme {
+            color: #ffcc00;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .img-action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-weight: bold;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .img-action-btn.download {
+            background: #ff9900;
+            color: black;
+        }
+
+        .img-action-btn.share {
+            background: rgba(255, 153, 0, 0.2);
+            color: #ffcc00;
+            border: 1px solid rgba(255, 153, 0, 0.5);
+        }
+
+        .img-action-btn.view {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .img-action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
+        }
+
+        /* Gallery */
+        .gallery-image-item {
+            cursor: pointer;
+            transition: transform 0.3s;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .gallery-image-item:hover {
+            transform: scale(1.05);
+            background: rgba(255, 153, 0, 0.1);
+        }
+
+        .gallery-image-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ff9900;
+        }
+
+        .gallery-img-title {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 8px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Fix for send button */
+        #aiChatView button {
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+
+        #aiChatView button:hover {
+            transform: translateY(-2px) !important;
+
+        }
+
+        #aiChatView button:active {
+            transform: translateY(0) !important;
+        }
+
+        /* Make sure input and button are properly aligned */
+        #aiChatView>div:last-child {
+            display: flex !important;
+            gap: 10px !important;
+            align-items: center !important;
+            padding: 10px !important;
+            background: rgba(0, 0, 0, 0.2) !important;
+            border-radius: 10px !important;
+            margin-top: 15px !important;
+        }
+
+        .chat-output-container {
+            height: 350px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .default-message {
+            color: #666;
+            text-align: center;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .default-message.hidden {
+            display: none;
+        }
+
+        .online-badge {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .offline-badge {
+            background: linear-gradient(135deg, #ff9900, #ff5500);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .copy-prompt-btn,
+        .download-btn,
+        .share-btn,
+        .view-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .download-btn {
+            background: #ff9900;
+            color: black;
+        }
+
+        .share-btn {
+            background: rgba(255, 153, 0, 0.2);
+            color: #ffcc00;
+            border: 1px solid #ff9900;
+        }
+
+        .view-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .copy-prompt-btn {
+            background: rgba(0, 123, 255, 0.2);
+            color: #007bff;
+            border: 1px solid #007bff;
+        }
+
+        .copy-prompt-btn:hover,
+        .download-btn:hover,
+        .share-btn:hover,
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 153, 0, 0.3);
+        }
+
+        .pixo-sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 3000;
+            top: 0;
+            left: 0;
+            background-color: #0c2129;
+            overflow-x: hidden;
+            transition: 0.4s ease;
+            padding-top: 60px;
+            box-shadow: none;
+            /* Band hone par shadow bhi hata di */
+            border-right: 0 solid #ffc400;
+            /* Border width zero kar di */
+        }
+
+        /* Jab sidebar khulay to ye CSS apply ho */
+        .pixo-sidebar[style*="width: 250px"] {
+            border-right: 2px solid #ffc400;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .pixo-sidebar a {
+            padding: 15px 25px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #fff;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .pixo-sidebar a:hover {
+            background: rgba(255, 196, 0, 0.1);
+            color: #ffc400;
+        }
+
+        .pixo-sidebar .closebtn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 36px;
+        }
+
+        .sidebar-logo {
+            color: #ffc400;
+            font-size: 24px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 30px;
+            /* Thoda sa mazeed upar taake clear nazar aaye */
+            width: 100%;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* Version box ke upar ki line */
+        .sidebar-footer::before {
+            content: "";
+            display: block;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #444, transparent);
+            margin-bottom: 15px;
+            width: 80%;
+            margin-left: 10%;
+        }
+
+        .version-label {
+            color: #888;
+            font-size: 11px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .version-number {
+            color: #ffffff;
+            /* White color version ke liye */
+            font-size: 13px;
+            font-weight: bold;
+            font-family: sans-serif;
+        }
+
+        #galleryContainer img {
+            object-fit: cover;
+            /* Isse lambi ya chori images card mein sahi fit aati hain */
+            aspect-ratio: 1 / 1;
+            /* Gallery mein sab ko square dikhane ke liye (optional) */
+        }
+
+        .gallery-card {
+            background: #121212;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        /* Direct ID and Class access for highest priority */
+        #aiChatView .ratio-btn {
+            background-color: rgba(30, 30, 46, 0.9) !important;
+            color: #888 !important;
+            border: 1px solid #444 !important;
+            padding: 8px 16px !important;
+            border-radius: 6px !important;
+        }
+
+        #aiChatView .ratio-btn.active {
+            background-color: #ffc400 !important;
+           
+            color: #000000 !important;
+            
+            font-weight: bold !important;
+        }
+
+        /* Container jo buttons ko line mein rakhega */
+        .ratio-selector {
+            display: flex !important;
+            flex-direction: row !important;
+            /* Force horizontal line */
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin: 20px auto !important;
+            width: 100% !important;
+            max-width: 400px;
+            /* Mobile par width control karne ke liye */
+        }
+
+        /* Base button style (Normal state) */
+        .ratio-btn {
+            flex: 1 !important;
+            
+            background-color: rgba(30, 30, 46, 0.9) !important;
+            color: #888 !important;
+            border: 1px solid #444 !important;
+            padding: 10px 5px !important;
+            border-radius: 8px !important;
+            font-size: 11px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            display: flex !important;
+            flex-direction: column !important;
+            /* Icon upar text niche */
+            align-items: center !important;
+            gap: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* Active State (Selection fix) */
+        .ratio-btn.active {
+            background-color: #ffc400 !important;
+            /* Yellow background */
+            color: #000 !important;
+            /* Black text */
+            border: 1px solid #ffc400 !important;
+
+        }
+
+        /* Icon size inside button */
+        .ratio-btn i {
+            font-size: 14px !important;
+        }
+        .save-btn {
+    background: #ffc400;
+    color: #000;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.25s ease;
+}
+
+.save-btn:hover {
+    background: #ffd84d;
+    transform: translateY(-1px);
+}
+
+.save-btn:active {
+    transform: scale(0.96);
+}
+
+.save-btn i {
+    font-size: 14px;
+}
+#helpModal {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.pixo-toast-hidden {
+    visibility: hidden;
+    min-width: 250px;
+    background: rgba(8, 22, 27, 0.95);
+    color: #ffc400;
+    text-align: center;
+    border-radius: 12px;
+    border: 2px solid #ffc400;
+    padding: 16px;
+    position: fixed;
+    z-index: 10000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    /* font-family: 'MedievalSharp', cursive; */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.pixo-toast-show {
+    visibility: visible;
+    animation: pixoFadeIn 0.5s, pixoFadeOut 0.5s 2.5s;
+}
+
+@keyframes pixoFadeIn {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+}
+
+@keyframes pixoFadeOut {
+    from { bottom: 30px; opacity: 1; }
+    to { bottom: 0; opacity: 0; }
+}
+    </style>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("kCHOf-4Jp9IdcAly0"); // Replace with your actual Public Key
+        })();
+    </script>
+</head>
+
+<body onload="showView('photoEditorView')">
+
+    <div class="app-container">
+        <div class="tab-navigation">
+            <button class="tab-button active" onclick="showView('photoEditorView')">Pixo Editor</button>
+            <button class="tab-button" onclick="showView('aiChatView')">Pixo AI</button>
+            <button class="tab-button" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+        </div>
+        <div id="sideMenu" class="pixo-sidebar">
+            <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">&times;</a>
+
+            <div class="sidebar-logo">PIXO</div>
+            <hr style="border: 0.5px solid #333; margin: 10px 0;">
+
+            <a href="#" onclick="openGallery(); toggleSidebar()"><i class="fas fa-image"></i> AI Gallery</a>
+            <a href="#" onclick="showView('aboutUsView'); toggleSidebar()"><i class="fas fa-info-circle"></i> About
+                Us</a>
+            <a href="#" onclick="location.reload()"><i class="fas fa-sync"></i> Refresh App</a>
+
+            <div class="sidebar-footer">
+                <span class="version-label">App Version</span>
+                <span class="version-number">v1.2.1</span>
+            </div>
+        </div>
+
+        <div id="aiGalleryView" class="view-section" style="display:none; width: 100%; padding: 20px;">
+            <h2 style="color:#ffc400; text-align:center; margin-bottom:20px;">Your AI
+                Gallery</h2>
+
+            <div id="galleryContainer" style="display:grid; grid-template-columns: 1fr; gap:20px; padding:10px;">
+            </div>
+
+            <div id="emptyGallery" style="color:#666; text-align:center; margin-top:50px; display:none;">
+                <i class="fas fa-images" style="font-size:40px; margin-bottom: 10px;"></i>
+                <p>No images saved yet.</p>
+            </div>
+        </div>
+
+        <div id="photoEditorView" class="view-section">
+            <!-- Existing Photo Editor content will go here -->
+
+            <div class="container">
+                <div class="header">
+                    <h1>Gradient Studio</h1>
+                    <p>Apply and compare professional gradients instantly.</p>
+                </div>
+
+                <div class="control-panel">
+                    <div class="upload-box">
+                        <input type="file" id="upload" accept="image/*">
+                        <label class="fas fa-image" for="upload">Choose Image</label>
+                        <button class="fas fa-download" id="downloadBtn">Download</button>
+                        <button class="fas fa-expand" id="viewFullscreenBtn" style="display: none;">View
+                            Fullscreen</button>
+                    </div>
+
+
+                    <div class="gradient-controls">
+
+                        <div class="image-wrapper" id="imageWrapper">
+                            <div class="image-container">
+                                <div class="image-before"><span class="label">Before</span></div>
+                                <div class="image-after"><span class="label">After</span></div>
+                            </div>
+                            <div class="comparison-slider">
+                                <div class="drag-line"><span></span></div>
+                                <input type="range" min="0" max="100" value="50">
+                            </div>
+                        </div>
+
+                        <div class="gradient-presets-container">
+                            <div class="gradient-presets">
+                                <button data-gradient="linear-gradient(135deg,#ff4d4d,#ffa500)"
+                                    style="background:linear-gradient(135deg,#ff4d4d,#ffa500);" class="active">
+                                    <div><i class="fas fa-sun"></i><span>Sunset Glow</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg,#4dff4d,#00ccff)"
+                                    style="background:linear-gradient(135deg,#4dff4d,#00ccff);">
+                                    <div><i class="fas fa-water"></i><span>Ocean Breeze</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg,#ff00ff,#ffcc00)"
+                                    style="background:linear-gradient(135deg,#ff00ff,#ffcc00);">
+                                    <div><i class="fas fa-cloud-sun"></i><span>Violet Sunrise</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg,#00ffff,#ff3300)"
+                                    style="background:linear-gradient(135deg,#00ffff,#ff3300);">
+                                    <div><i class="fas fa-fire-alt"></i><span>Fire & Ice</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg,#8a2be2,#ff1493)"
+                                    style="background:linear-gradient(135deg,#8a2be2,#ff1493);">
+                                    <div><i class="fas fa-crown"></i><span>Royal Purple</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg,#00ff00,#ffff00)"
+                                    style="background:linear-gradient(135deg,#00ff00,#ffff00);">
+                                    <div><i class="fas fa-bolt"></i><span>Electric Lime</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #00d4ff, #090979)"
+                                    style="background:linear-gradient(135deg, #00d4ff, #090979);">
+                                    <div><i class="fas fa-tint"></i><span>Deep Blue</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #c70039, #900c3f)"
+                                    style="background:linear-gradient(135deg, #c70039, #900c3f);">
+                                    <div><i class="fas fa-burn"></i><span>Crimson Heat</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #ffc300, #ff5733)"
+                                    style="background:linear-gradient(135deg, #ffc300, #ff5733);">
+                                    <div><i class="fas fa-gem"></i><span>Golden Hour</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #4CAF50, #8BC34A)"
+                                    style="background:linear-gradient(135deg, #4CAF50, #8BC34A);">
+                                    <div><i class="fas fa-leaf"></i><span>Forest Green</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #1e1e1e, #333333)"
+                                    style="background:linear-gradient(135deg, #1e1e1e, #333333);">
+                                    <div><i class="fas fa-film"></i><span>Cinematic</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #00f260, #0575e6)"
+                                    style="background:linear-gradient(135deg, #00f260, #0575e6);">
+                                    <div><i class="fas fa-lightbulb"></i><span>Neon</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #fce38a, #ffadad)"
+                                    style="background:linear-gradient(135deg, #fce38a, #ffadad);">
+                                    <div><i class="fas fa-paint-brush"></i><span>Pastel</span></div>
+                                </button>
+                                <button data-gradient="linear-gradient(135deg, #fc00ff, #00dbde)"
+                                    style="background:linear-gradient(135deg, #fc00ff, #00dbde);">
+                                    <div><i class="fas fa-robot"></i><span>Cyberpunk</span></div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="image-controls-container">
+                            <div class="control-buttons">
+                                <button class="control-button" data-target="opacityControl"><i
+                                        class="fas fa-eye"></i></button>
+                                <button class="control-button" data-target="sharpenControl"><i
+                                        class="fas fa-magic"></i></button>
+                                <button class="control-button" data-target="brightnessControl"><i
+                                        class="fas fa-lightbulb"></i></button>
+                                <button class="control-button" data-target="contrastControl"><i
+                                        class="fas fa-adjust"></i></button>
+                                <button class="control-button" data-target="saturationControl"><i
+                                        class="fas fa-tint"></i></button>
+                                <button class="control-button" data-target="vibranceControl"><i
+                                        class="fas fa-heartbeat"></i></button>
+                                <button class="control-button" data-target="temperatureControl"><i
+                                        class="fas fa-thermometer-half"></i></button>
+                            </div>
+
+                            <div id="opacityControl" class="control-slider">
+                                <input type="range" id="opacitySlider" min="0" max="100" value="85">
+                                <span class="opacity-value">85%</span>
+                            </div>
+
+                            <div id="sharpenControl" class="control-slider">
+                                <input type="range" id="sharpenSlider" min="0" max="100" value="0">
+                                <span class="sharpen-value">0%</span>
+                            </div>
+
+                            <div id="brightnessControl" class="control-slider">
+                                <input type="range" id="brightnessSlider" min="0" max="200" value="100">
+                                <span class="brightness-value">100%</span>
+                            </div>
+
+                            <div id="contrastControl" class="control-slider">
+                                <input type="range" id="contrastSlider" min="0" max="200" value="100">
+                                <span class="contrast-value">100%</span>
+                            </div>
+
+                            <div id="saturationControl" class="control-slider">
+                                <input type="range" id="saturationSlider" min="0" max="200" value="100">
+                                <span class="saturation-value">100%</span>
+                            </div>
+
+                            <div id="vibranceControl" class="control-slider">
+                                <input type="range" id="vibranceSlider" min="0" max="200" value="100">
+                                <span class="vibrance-value">100%</span>
+                            </div>
+
+                            <div id="temperatureControl" class="control-slider">
+                                <input type="range" id="temperatureSlider" min="-100" max="100" value="0">
+                                <span class="temperature-value">0</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Moved image-wrapper content is now inside gradient-controls -->
+
+            </div>
+
+            <div class="toast" id="toast"></div>
+
+            <svg width="0" height="0" style="position:absolute; z-index:-1;">
+                <filter id="sharpen-filter">
+                    <feConvolveMatrix order="3" kernelMatrix="0 -1 0 -1 5 -1 0 -1 0" divisor="1" bias="0" />
+                </filter>
+            </svg>
+
+        </div> <!-- End photoEditorView -->
+
+        <div id="aiChatView" class="view-section" style="display:none;">
+
+            <div class="ratio-selector">
+                <button onclick="setRatio(1024, 1024, this)" class="ratio-btn active">
+                    <i class="fas fa-square"></i> 1:1
+                </button>
+                <button onclick="setRatio(720, 1280, this)" class="ratio-btn">
+                    <i class="fas fa-mobile-alt"></i> 9:16
+                </button>
+                <button onclick="setRatio(1280, 720, this)" class="ratio-btn">
+                    <i class="fas fa-film"></i> 16:9
+                </button>
+            </div>
+   <div style="background: rgba(255, 196, 0, 0.1); border: 1px solid #ffc400; border-radius: 12px; padding: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 400px; margin-bottom: 15px;">
+    <div style="color: #ffc400; font-size: 14px; font-weight: bold;">
+        <i class="fas fa-coins"></i> Credits: <span id="creditCount">8</span>/8
+    </div>
+    <i class="fas fa-question-circle" onclick="toggleHelp()" style="color: #ffc400; cursor: pointer; font-size: 18px;"></i>
+</div>
+
+<div id="helpModal" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center; padding:20px;">
+    <div style="background: #0c2129; border:2px solid #ffc400; border-radius:15px; padding:20px; max-width:400px; position:relative; color:white; font-family:sans-serif;">
+        <i class="fas fa-times" onclick="toggleHelp()" style="position:absolute; top:10px; right:15px; cursor:pointer; color:#ffc400;"></i>
+        
+        <h3 style="color:#ffc400; text-align:center; margin-bottom:15px;">📜 How to use Pixo AI</h3>
+        
+        <ul style="list-style:none; padding:0; font-size:14px; line-height:1.8;">
+            <li><i class="fas fa-edit" style="color:#ffc400;"></i> <b>Step 1:</b> Enter a detailed prompt (e.g., "A brave knight on a dragon").</li>
+            <li><i class="fas fa-expand" style="color:#ffc400;"></i> <b>Step 2:</b> Select your preferred Image Ratio.</li>
+            <li><i class="fas fa-paint-brush" style="color:#ffc400;"></i> <b>Step 3:</b> Click 'Paint'. It takes about 30s to create magic.</li>
+            <li><i class="fas fa-save" style="color:#ffc400;"></i> <b>Step 4:</b> Once the image appears, use the 'Save' button.</li>
+            <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
+            <li style="font-size:12px; color:#aaa;"><i class="fas fa-info-circle"></i> Daily Limit: 6 images. Credits reset every 24 hours.</li>
+        </ul>
+        
+        <button onclick="toggleHelp()" style="width:100%; background:#ffc400; border:none; padding:10px; border-radius:8px; margin-top:15px; font-weight:bold; cursor:pointer;">Got it!</button>
+    </div>
+</div>
+
+    <!-- <button onclick="watchAdForCredit()" style="background: #ffc400; color: #000; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(255, 196, 0, 0.3);">
+        <i class="fas fa-play-circle"></i> Watch Ad (+1)
+    </button> -->
+</div>
+            <div id="chatOutput"></div>
+            <div class="input-area">
+             
+                <input type="text" id="chatInput" placeholder="Describe your image...">
+               <button id="paintBtn" onclick="handleAISubmit()">Paint</button>
+            </div>
+        </div>
+        <div id="aiChatView" class="view-section"
+            style="display:none; padding: 20px; background: #0c2129; min-height: 80vh; width: 100%;">
+            <h2 style="color: #ff9900; text-align: center;"><i class="fas fa-robot"></i> Pixo AI Assistant</h2>
+
+            <!-- Model Selection - YE NAYA SECTION ADD KAREIN -->
+            <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
+                <button id="geminiFlashBtn" class="model-btn" data-model="gemini-1.5-flash">
+                    <i class="fas fa-comments"></i> Chat
+                </button>
+                <button id="imagen3Btn" class="model-btn " data-model="imagen-3">
+                    <i class="fas fa-image"></i> Images
+                </button>
+            </div>
+
+            <div id="chatOutput" class="chat-output-container">
+                <div id="defaultMessage" class="default-message">
+                    Generate images with Pixo AI...
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; padding: 10px;">
+                <input type="text" id="chatInput" placeholder="Type your message or image description..."
+                    style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: white; outline: none;">
+
+                <button onclick="handleAISubmit()" id="sendAIBtn"
+                    style="padding: 10px 20px; background: #ff9900; color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <!-- Generated Images Display - YE NAYA SECTION ADD KAREIN -->
+            <div id="imageGallery"
+                style="display: none; margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                <h3 style="color: #ffcc00; text-align: center;">Generated Images</h3>
+                <div id="generatedImages"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- End aiChatView -->
+
+        <div id="aboutUsView" class="view-section">
+            <div class="container"
+                style="background: rgba(30, 30, 46, 0.8); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 153, 0, 0.3); clip-path: polygon(0 0, 100% 0, 100% 95%, 95% 100%, 0 100%); color: #fff; max-width: 800px; display: flex; flex-direction: column; gap: 20px;">
+                <h2>About Pixo App</h2>
+                <p>Pixo is an innovative image editing application designed to provide users with powerful tools to
+                    enhance their photos with stunning gradients and various adjustments. It's built to be intuitive and
+                    efficient, bringing professional-grade editing capabilities right to your fingertips.</p>
+                <h3>Created by:</h3>
+                <p><strong>Muhammad Iqbal</strong> - Owner of Faux Fire Company</p>
+
+                <h3>Rate Our App:</h3>
+                <div class="star-rating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <input type="hidden" id="ratingInput" value="0">
+
+                <form id="feedbackForm" style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+                    <input type="text" id="userName" placeholder="Your Name "
+                        style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ff9900; background: rgba(0, 0, 0, 0.5); color: #fff;  ">
+                    <input type="email" id="userEmail" placeholder="Your Email "
+                        style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ff9900; background: rgba(0, 0, 0, 0.5); color: #fff;  ">
+                    <textarea id="feedbackMessage" placeholder="Your feedback or message (optional)" rows="5"
+                        style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ff9900; background: rgba(0, 0, 0, 0.5); color: #fff;"></textarea>
+                    <button type="submit" id="submitFeedbackBtn"
+                        style="background: linear-gradient(90deg, #ff6600, #ffcc00); color: #fff; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 16px; text-shadow: 0 0 5px #000; box-shadow: 0 5px 15px rgba(255, 90, 0, 0.5); transition: all 0.3s ease;">Submit
+                        Feedback</button>
+                </form>
+            </div>
+        </div> <!-- End aboutUsView -->
+
+    </div> <!-- End app-container -->
+
+    <div id="fullscreenPreview" class="fullscreen-preview">
+        <img id="fullscreenImage" src="" alt="Full Screen Preview">
+        <button id="closeFullscreenBtn" class="close-button">&times;</button>
+    </div>
+    <!-- Download button ke baad ye add karein -->
+    <div id="socialShareTab" class="social-share-tab" style="display: none;">
+        <div class="share-tab-header">
+            <h3><i class="fas fa-share-alt"></i> Share Your Creation</h3>
+            <button id="closeShareTab" class="close-tab-btn">&times;</button>
+        </div>
+
+        <div class="share-tab-content">
+            <p class="share-message">🎉 Image saved! Use the 'More' button to share the image file on any app.</p>
+
+            <div class="social-platforms">
+                <button class="social-btn whatsapp" data-platform="whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </button>
+
+
+
+                <button class="social-btn telegram" data-platform="telegram">
+                    <i class="fab fa-telegram-plane"></i>
+                    <span>Telegram</span>
+                </button>
+
+                <button class="social-btn sms" data-platform="sms">
+                    <i class="fas fa-sms"></i>
+                    <span>SMS</span>
+                </button>
+
+                <button class="social-btn more-apps" data-platform="more">
+                    <i class="fas fa-ellipsis-h"></i>
+                    <span>More Apps</span>
+                </button>
+            </div>
+
+            <div class="share-actions">
+                <!-- <button id="viewInGallery" class="action-btn gallery-btn">
+        <i class="fas fa-images"></i> View in Gallery
+      </button> -->
+                <button id="editAgain" class="action-btn edit-btn">
+                    <i class="fas fa-edit"></i> Edit Another
+                </button>
+            </div>
+
+            <p class="share-tip">
+                <i class="fas fa-lightbulb"></i> Tip: Sharing helps others discover our app!
+            </p>
+        </div>
+    </div>
+
+<div id="pixoToast" class="pixo-toast-hidden"></div>
+
+    <script src="cordova.js"></script>
+
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sideMenu");
+            // Agar width 0 hai to 250px kar do, warna wapas 0
+            if (sidebar.style.width === "250px") {
+                sidebar.style.width = "0";
+            } else {
+                sidebar.style.width = "250px";
+            }
+        }
+        // Tab Navigation Function
+        function showView(viewId) {
+            console.log("Switching to view:", viewId);
+
+            // Hide ALL view-sections
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.style.display = 'none';
+                view.classList.remove('active');
+            });
+
+            // Show the selected view
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.style.display = 'block';
+                targetView.classList.add('active');
+            }
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+                // Check if button onclick contains this viewId
+                const onclickAttr = btn.getAttribute('onclick');
+                if (onclickAttr && onclickAttr.includes(viewId)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        /****************************************************
+         *  FULL CORDOVA-READY JS
+         *  IMAGE UPLOAD + GRADIENT OVERLAY + GALLERY SAVE
+         ****************************************************/
+
+        // UI References
+        const uploadInput = document.getElementById('upload');
+        const wrapper = document.getElementById('imageWrapper');
+        const beforeImg = document.querySelector('.image-before');
+        const afterImg = document.querySelector('.image-after');
+        const slider = document.querySelector('.comparison-slider input');
+        const dragLine = document.querySelector('.drag-line');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const gradientButtons = document.querySelectorAll('.gradient-presets button');
+        const opacitySlider = document.getElementById('opacitySlider');
+        const opacityValue = document.querySelector('.opacity-value');
+        const toast = document.getElementById('toast');
+        const viewFullscreenBtn = document.getElementById('viewFullscreenBtn');
+        const fullscreenPreview = document.getElementById('fullscreenPreview');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+        const closeFullscreenBtn = document.getElementById('closeFullscreenBtn');
+
+        const sharpenSlider = document.getElementById('sharpenSlider');
+        const sharpenValue = document.querySelector('.sharpen-value');
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        const brightnessValue = document.querySelector('.brightness-value');
+        const contrastSlider = document.getElementById('contrastSlider');
+        const contrastValue = document.querySelector('.contrast-value');
+        const saturationSlider = document.getElementById('saturationSlider');
+        const saturationValue = document.querySelector('.saturation-value');
+        const vibranceSlider = document.getElementById('vibranceSlider');
+        const vibranceValue = document.querySelector('.vibrance-value');
+        const temperatureSlider = document.getElementById('temperatureSlider');
+        const temperatureValue = document.querySelector('.temperature-value');
+        const socialShareTab = document.getElementById('socialShareTab');
+        const closeShareTab = document.getElementById('closeShareTab');
+        const shareOverlay = document.createElement('div');
+
+        shareOverlay.className = 'share-overlay';
+        document.body.appendChild(shareOverlay);
+
+        // State
+        let uploadedImage = null;
+        let currentGradient = 'linear-gradient(135deg,#ff4d4d,#ffa500)';
+        let currentOpacity = 0.85;
+        let currentSharpen = 0;
+        let currentBrightness = 100;
+        let currentContrast = 100;
+        let currentSaturation = 100;
+        let currentVibrance = 100;
+        let currentTemperature = 0;
+
+        /****************************************************
+         * DEVICE READY + PERMISSIONS
+         ****************************************************/
+        document.addEventListener("deviceready", () => {
+            console.log("Cordova Ready event fired.");
+
+            // CHECK IF PLUGIN LOADED
+            console.log("MediaScanner loaded:", typeof window.plugins.MediaScanner !== "undefined");
+
+            // Request WRITE_EXTERNAL_STORAGE
+            if (window.cordova && window.cordova.plugins && window.cordova.plugins.permissions) {
+                console.log("Cordova Permissions plugin is available. Checking WRITE_EXTERNAL_STORAGE permission...");
+                var permissions = window.cordova.plugins.permissions;
+                permissions.checkPermission(permissions.WRITE_EXTERNAL_STORAGE, function (status) {
+                    console.log("Permission check status:", status);
+                    if (!status.hasPermission) {
+                        console.log("Permission not granted, requesting...");
+                        permissions.requestPermission(permissions.WRITE_EXTERNAL_STORAGE, function (status) {
+                            console.log("Permission request status:", status);
+                            if (!status.hasPermission) showToast("⚠ Permission denied! Saving will fail.");
+                            else showToast("Storage permission granted.");
+                        }, function (error) {
+                            console.error("Permission request failed:", error);
+                            showToast("⚠ Permission request failed!");
+                        });
+                    } else {
+                        showToast("Storage permission already granted.");
+                    }
+                }, function (error) {
+                    console.error("Error checking permissions:", error);
+                    showToast("Error checking storage permission.");
+                });
+            } else {
+                console.warn("Cordova Permissions plugin not available.");
+                showToast("Permissions plugin not found. Saving may fail.");
+            }
+        }, false);
+
+
+        document.addEventListener("deviceready", () => {
+            FCM.getToken().then(token => {
+                console.log("Device Token:", token);
+            });
+
+            FCM.onNotification(data => {
+                if (data.wasTapped) {
+                    console.log("Notification tapped:", data);
+                } else {
+                    console.log("Foreground notification:", data);
+                }
+            });
+
+            // Local notification for first time launch
+            if (window.cordova && window.cordova.plugins.notification && window.cordova.plugins.notification.local) {
+                console.log("Local Notification plugin is available.");
+                const isFirstLaunch = localStorage.getItem('first_time_launch');
+
+                if (!isFirstLaunch) {
+                    console.log("First time launch detected. Scheduling local notification.");
+                    cordova.plugins.notification.local.schedule({
+                        id: 1,
+                        title: "Welcome to PhotoZone!",
+                        text: "Thanks for installing our app! Enjoy editing your photos.",
+                        foreground: true
+                    });
+                    localStorage.setItem('first_time_launch', 'true');
+                } else {
+                    console.log("Not first launch.");
+                }
+            } else {
+                console.warn("Local Notification plugin not available.");
+            }
+        });
+
+        /****************************************************
+         * IMAGE UPLOAD
+         ****************************************************/
+        uploadInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = evt => {
+                uploadedImage = new Image();
+                uploadedImage.src = evt.target.result;
+                uploadedImage.onload = () => {
+                    beforeImg.style.backgroundImage = `url(${uploadedImage.src})`;
+                    afterImg.style.backgroundImage = `url(${uploadedImage.src})`;
+                    wrapper.style.display = "block";
+                    updateAfterOverlay();
+                    viewFullscreenBtn.style.display = "inline-flex"; // Show the fullscreen button
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+
+        /****************************************************
+         * SLIDER MOVEMENT
+         ****************************************************/
+        slider.addEventListener('input', () => {
+            const val = slider.value;
+            afterImg.style.width = val + "%";
+            dragLine.style.left = val + "%";
+        });
+
+        /****************************************************
+         * GRADIENT PRESET BUTTONS
+         ****************************************************/
+        gradientButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                gradientButtons.forEach(b => {
+                    b.classList.remove('active');
+                    b.style.removeProperty('--button-gradient'); // Remove variable from inactive buttons
+                });
+                btn.classList.add('active');
+                currentGradient = btn.getAttribute('data-gradient');
+                btn.style.setProperty('--button-gradient', currentGradient); // Set variable for active button
+                updateAfterOverlay();
+            });
+        });
+        // Set initial gradient for the active button on load
+        const initialActiveButton = document.querySelector('.gradient-presets button.active');
+        if (initialActiveButton) {
+            initialActiveButton.style.setProperty('--button-gradient', initialActiveButton.getAttribute('data-gradient'));
+        }
+
+        // New JavaScript for control buttons
+        const controlButtons = document.querySelectorAll('.control-button');
+        const controlSliders = document.querySelectorAll('.control-slider');
+
+        controlButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and hide all sliders
+                controlButtons.forEach(btn => btn.classList.remove('active'));
+                controlSliders.forEach(slider => slider.style.display = 'none');
+
+                // Add active class to the clicked button
+                button.classList.add('active');
+
+                // Show the corresponding slider
+                const targetSliderId = button.getAttribute('data-target');
+                const targetSlider = document.getElementById(targetSliderId);
+                if (targetSlider) {
+                    targetSlider.style.display = 'flex'; // Use flex to maintain alignment
+                    const buttonName = button.getAttribute('data-target')
+                        .replace('Control', '')
+                        .replace(/([A-Z])/g, ' $1')
+                        .trim();
+                    showToast(`Current: ${buttonName}`);
+                }
+            });
+        });
+
+        // Show the first slider by default on load
+        if (controlButtons.length > 0) {
+            controlButtons[0].classList.add('active');
+            const initialTargetSliderId = controlButtons[0].getAttribute('data-target');
+            const initialTargetSlider = document.getElementById(initialTargetSliderId);
+            if (initialTargetSlider) {
+                initialTargetSlider.style.display = 'flex';
+            }
+        }
+
+        opacitySlider.addEventListener('input', () => {
+            currentOpacity = parseFloat(opacitySlider.value) / 100; // Convert to 0-1 range
+            opacityValue.textContent = `${opacitySlider.value}%`;
+            updateAfterOverlay();
+        });
+        sharpenSlider.addEventListener('input', () => {
+            currentSharpen = parseInt(sharpenSlider.value);
+            sharpenValue.textContent = `${currentSharpen}%`;
+            updateAfterOverlay();
+        });
+
+        brightnessSlider.addEventListener('input', () => {
+            currentBrightness = parseInt(brightnessSlider.value);
+            brightnessValue.textContent = `${currentBrightness}%`;
+            updateAfterOverlay();
+        });
+
+        contrastSlider.addEventListener('input', () => {
+            currentContrast = parseInt(contrastSlider.value);
+            contrastValue.textContent = `${currentContrast}%`;
+            updateAfterOverlay();
+        });
+
+        saturationSlider.addEventListener('input', () => {
+            currentSaturation = parseInt(saturationSlider.value);
+            saturationValue.textContent = `${currentSaturation}%`;
+            updateAfterOverlay();
+        });
+
+        vibranceSlider.addEventListener('input', () => {
+            currentVibrance = parseInt(vibranceSlider.value);
+            vibranceValue.textContent = `${currentVibrance}%`;
+            updateAfterOverlay();
+        });
+
+        temperatureSlider.addEventListener('input', () => {
+            currentTemperature = parseInt(temperatureSlider.value);
+            temperatureValue.textContent = `${currentTemperature > 0 ? '+' : ''}${currentTemperature}`;
+            updateAfterOverlay();
+        });
+
+
+        function updateAfterOverlay() {
+            const oldStyle = document.getElementById('dynamic-overlay-style');
+            if (oldStyle) oldStyle.remove();
+
+            // Construct filter string for CSS
+            let filters = [];
+            if (currentBrightness !== 100) filters.push(`brightness(${currentBrightness}%)`);
+            if (currentContrast !== 100) filters.push(`contrast(${currentContrast}%)`);
+            if (currentSaturation !== 100) filters.push(`saturate(${currentSaturation}%)`);
+            if (currentVibrance !== 100) filters.push(`saturate(${currentVibrance}%)`); // Approximating vibrance with saturate
+
+            // Temperature approximation: use hue-rotate and sepia
+            if (currentTemperature > 0) {
+                filters.push(`sepia(${currentTemperature / 100}) hue-rotate(${currentTemperature * 0.5}deg)`);
+            } else if (currentTemperature < 0) {
+                filters.push(`hue-rotate(${currentTemperature * 0.5}deg)`);
+            }
+
+            // Sharpen filter needs SVG, apply only if value > 0
+            if (currentSharpen > 0) {
+                filters.push(`url(#sharpen-filter)`);
+            }
+
+            const filterString = filters.length > 0 ? filters.join(' ') : 'none';
+
+            const style = document.createElement('style');
+            style.id = "dynamic-overlay-style";
+            style.innerHTML = `
+        .image-after::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: ${currentGradient};
+            mix-blend-mode: multiply;
+            opacity: ${currentOpacity};
+            pointer-events: none;
+        }
+        .image-after {
+            filter: ${filterString};
+        }
+    `;
+            document.head.appendChild(style);
+        }
+
+        /****************************************************
+         * TOAST FUNCTION
+         ****************************************************/
+        function showToast(msg) {
+            // Clear any existing timeout before setting a new one
+            if (window.currentToastTimeout) {
+                clearTimeout(window.currentToastTimeout);
+            }
+            toast.textContent = msg;
+            toast.classList.add("show");
+            window.currentToastTimeout = setTimeout(() => {
+                toast.classList.remove("show");
+                window.currentToastTimeout = null; // Clear the reference after execution
+            }, 3000);
+        }
+
+
+        /****************************************************
+         * DOWNLOAD / SAVE IMAGE
+         ****************************************************/
+        function resetSharingTab() {
+            if (socialShareTab) {
+                socialShareTab.classList.remove('active');
+                socialShareTab.style.display = 'none';
+            }
+            if (shareOverlay) {
+                shareOverlay.classList.remove('active');
+                shareOverlay.style.display = 'none';
+            }
+            document.body.style.overflow = '';
+        }
+
+        downloadBtn.addEventListener('click', async () => {
+            if (!uploadedImage) {
+                showToast("❌ Please upload an image first");
+                return;
+            }
+
+            showToast("🔄 Saving image...");
+
+            try {
+                // Pehle existing tab ko reset karein
+                resetSharingTab();
+
+                // Pehle image save karein
+                await saveImageToGallery();
+
+                // Success message
+                showToast("✅ Image saved successfully!");
+
+                // 1 second baad sharing tab show karein
+                setTimeout(() => {
+                    showSharingTab();
+                }, 1000);
+
+            } catch (error) {
+                console.error("Download error:", error);
+                showToast("❌ Failed to save image");
+            }
+        });
+
+        async function saveImageToGallery() {
+            return new Promise((resolve, reject) => {
+                // Aapka existing save code yahan aayega
+                const canvas = document.createElement('canvas');
+                canvas.width = uploadedImage.width;
+                canvas.height = uploadedImage.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(uploadedImage, 0, 0);
+
+                // Apply all adjustments...
+                applyBrightnessToCanvas(ctx, canvas.width, canvas.height, currentBrightness);
+                applyContrastToCanvas(ctx, canvas.width, canvas.height, currentContrast);
+                applySaturationToCanvas(ctx, canvas.width, canvas.height, currentSaturation);
+                applyVibranceToCanvas(ctx, canvas.width, canvas.height, currentVibrance);
+                applyTemperatureToCanvas(ctx, canvas.width, canvas.height, currentTemperature);
+                if (currentSharpen > 0) {
+                    applySharpenToCanvas(ctx, canvas.width, canvas.height, currentSharpen);
+                }
+
+                // Apply gradient overlay...
+                const overlay = document.createElement("canvas");
+                overlay.width = uploadedImage.width;
+                overlay.height = uploadedImage.height;
+                const oCtx = overlay.getContext("2d");
+
+                const colors = currentGradient.match(/#([0-9a-fA-F]{3,6})/g) || ["#ff4d4d", "#ffa500"];
+                const grad = oCtx.createLinearGradient(0, 0, overlay.width, overlay.height);
+                grad.addColorStop(0, colors[0]);
+                grad.addColorStop(1, colors[1] || colors[0]);
+                oCtx.fillStyle = grad;
+                oCtx.fillRect(0, 0, overlay.width, overlay.height);
+
+                // Multiply blend...
+                const base = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const top = oCtx.getImageData(0, 0, overlay.width, overlay.height);
+                for (let i = 0; i < base.data.length; i += 4) {
+                    base.data[i] = base.data[i] * top.data[i] / 255 * currentOpacity + base.data[i] * (1 - currentOpacity);
+                    base.data[i + 1] = base.data[i + 1] * top.data[i + 1] / 255 * currentOpacity + base.data[i + 1] * (1 - currentOpacity);
+                    base.data[i + 2] = base.data[i + 2] * top.data[i + 2] / 255 * currentOpacity + base.data[i + 2] * (1 - currentOpacity);
+                }
+                ctx.putImageData(base, 0, 0);
+
+                const finalData = canvas.toDataURL("image/png");
+
+                if (window.cordova) {
+                    saveWithCordova(finalData).then((filePath) => {
+                        showToast("✅ Image saved to gallery!");
+                        resolve(filePath); // Pass file path back
+                    }).catch(error => {
+                        showToast("❌ Failed to save");
+                        reject(error);
+                    });
+                } else {
+                    // Browser fallback
+                    const a = document.createElement("a");
+                    a.href = finalData;
+                    a.download = "pixo_edit_" + Date.now() + ".png";
+                    a.click();
+                    showToast("✅ Image saved!");
+                    resolve();
+                }
+            });
+        }
+
+        /****************************************************
+         * FULLSCREEN PREVIEW
+         ****************************************************/
+        viewFullscreenBtn.addEventListener('click', () => {
+            if (!uploadedImage) {
+                showToast("❌ Please upload an image first");
+                return;
+            }
+            showToast("🔄 Generating preview...");
+            generateProcessedImage().then(dataUrl => {
+                fullscreenImage.src = dataUrl;
+                fullscreenPreview.style.display = 'flex';
+                showToast("✅ Fullscreen preview ready!");
+            }).catch(error => {
+                console.error("Error generating fullscreen image:", error);
+                showToast("❌ Failed to generate preview.");
+            });
+        });
+
+        closeFullscreenBtn.addEventListener('click', () => {
+            fullscreenPreview.style.display = 'none';
+            fullscreenImage.src = ''; // Clear image source
+        });
+
+        async function generateProcessedImage() {
+            return new Promise((resolve, reject) => {
+                if (!uploadedImage) {
+                    return reject("No image uploaded.");
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = uploadedImage.width;
+                canvas.height = uploadedImage.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(uploadedImage, 0, 0);
+
+                // Apply all adjustments to the canvas data
+                applyBrightnessToCanvas(ctx, canvas.width, canvas.height, currentBrightness);
+                applyContrastToCanvas(ctx, canvas.width, canvas.height, currentContrast);
+                applySaturationToCanvas(ctx, canvas.width, canvas.height, currentSaturation);
+                applyVibranceToCanvas(ctx, canvas.width, canvas.height, currentVibrance);
+                applyTemperatureToCanvas(ctx, canvas.width, canvas.height, currentTemperature);
+                if (currentSharpen > 0) {
+                    applySharpenToCanvas(ctx, canvas.width, canvas.height, currentSharpen);
+                }
+
+                // Apply gradient overlay
+                const overlay = document.createElement("canvas");
+                overlay.width = uploadedImage.width;
+                overlay.height = uploadedImage.height;
+                const oCtx = overlay.getContext("2d");
+
+                const colors = currentGradient.match(/#([0-9a-fA-F]{3,6})/g) || ["#ff4d4d", "#ffa500"];
+                const grad = oCtx.createLinearGradient(0, 0, overlay.width, overlay.height);
+                grad.addColorStop(0, colors[0]);
+                grad.addColorStop(1, colors[1] || colors[0]);
+                oCtx.fillStyle = grad;
+                oCtx.fillRect(0, 0, overlay.width, overlay.height);
+
+                // Multiply blend
+                const base = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const top = oCtx.getImageData(0, 0, overlay.width, overlay.height);
+                for (let i = 0; i < base.data.length; i += 4) {
+                    base.data[i] = base.data[i] * top.data[i] / 255 * currentOpacity + base.data[i] * (1 - currentOpacity);
+                    base.data[i + 1] = base.data[i + 1] * top.data[i + 1] / 255 * currentOpacity + base.data[i + 1] * (1 - currentOpacity);
+                    base.data[i + 2] = base.data[i + 2] * top.data[i + 2] / 255 * currentOpacity + base.data[i + 2] * (1 - currentOpacity);
+                }
+                ctx.putImageData(base, 0, 0);
+
+                resolve(canvas.toDataURL("image/png"));
+            });
+        }
+
+        /****************************************************
+         * IMAGE ADJUSTMENT FUNCTIONS FOR CANVAS
+         ****************************************************/
+
+        function applyBrightnessToCanvas(ctx, width, height, amount) {
+            if (amount === 100) return;
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const pixels = imageData.data;
+            const factor = amount / 100;
+            for (let i = 0; i < pixels.length; i += 4) {
+                pixels[i] = Math.min(255, pixels[i] * factor);
+                pixels[i + 1] = Math.min(255, pixels[i + 1] * factor);
+                pixels[i + 2] = Math.min(255, pixels[i + 2] * factor);
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyContrastToCanvas(ctx, width, height, amount) {
+            if (amount === 100) return;
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const pixels = imageData.data;
+            const factor = (amount / 100);
+            const intercept = 128 * (1 - factor);
+            for (let i = 0; i < pixels.length; i += 4) {
+                pixels[i] = Math.min(255, Math.max(0, pixels[i] * factor + intercept));
+                pixels[i + 1] = Math.min(255, Math.max(0, pixels[i + 1] * factor + intercept));
+                pixels[i + 2] = Math.min(255, Math.max(0, pixels[i + 2] * factor + intercept));
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applySaturationToCanvas(ctx, width, height, amount) {
+            if (amount === 100) return;
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const pixels = imageData.data;
+            const x = amount / 100;
+            const lumR = 0.3086;
+            const lumG = 0.6094;
+            const lumB = 0.0820;
+
+            const sr = (1 - x) * lumR;
+            const sg = (1 - x) * lumG;
+            const sb = (1 - x) * lumB;
+
+            const adjustMatrix = [
+                sr + x, sg, sb,
+                sr, sg + x, sb,
+                sr, sg, sb + x
+            ];
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+
+                pixels[i] = Math.min(255, Math.max(0, r * adjustMatrix[0] + g * adjustMatrix[1] + b * adjustMatrix[2]));
+                pixels[i + 1] = Math.min(255, Math.max(0, r * adjustMatrix[3] + g * adjustMatrix[4] + b * adjustMatrix[5]));
+                pixels[i + 2] = Math.min(255, Math.max(0, r * adjustMatrix[6] + g * adjustMatrix[7] + b * adjustMatrix[8]));
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+        function applyVibranceToCanvas(ctx, width, height, amount) {
+            if (amount === 100) return;
+            // Vibrance is a more nuanced saturation. For canvas, we'll approximate it with saturation.
+            // A more accurate vibrance would increase saturation for less saturated colors more than already saturated ones.
+            applySaturationToCanvas(ctx, width, height, amount);
+        }
+
+        function applyTemperatureToCanvas(ctx, width, height, amount) {
+            if (amount === 0) return;
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const pixels = imageData.data;
+            const tempAdjust = amount / 100; // -1 to 1
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                let r = pixels[i];
+                let g = pixels[i + 1];
+                let b = pixels[i + 2];
+
+                if (tempAdjust > 0) { // Warmth
+                    r += 50 * tempAdjust;
+                    b -= 50 * tempAdjust;
+                } else { // Coolness
+                    r += 50 * tempAdjust; // decrease red
+                    b -= 50 * tempAdjust; // increase blue
+                }
+
+                pixels[i] = Math.min(255, Math.max(0, r));
+                pixels[i + 1] = Math.min(255, Math.max(0, g));
+                pixels[i + 2] = Math.min(255, Math.max(0, b));
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+
+
+        /****************************************************
+         * IMAGE SHARPEN FUNCTION FOR CANVAS
+         ****************************************************/
+        function applySharpenToCanvas(ctx, width, height, amount) {
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const pixels = imageData.data;
+            const factor = (amount / 100) * 0.5;
+
+            const kernel = [
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+            ];
+            const kernelSize = 3;
+
+            const outputPixels = new Uint8ClampedArray(pixels.length);
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+
+                    let r = 0, g = 0, b = 0;
+
+                    for (let ky = 0; ky < kernelSize; ky++) {
+                        for (let kx = 0; kx < kernelSize; kx++) {
+                            const pixelY = y + ky - 1;
+                            const pixelX = x + kx - 1;
+
+                            if (pixelY >= 0 && pixelY < height && pixelX >= 0 && pixelX < width) {
+                                const kernelIndex = ky * kernelSize + kx;
+                                const imgIndex = (pixelY * width + pixelX) * 4;
+
+                                r += pixels[imgIndex] * kernel[kernelIndex];
+                                g += pixels[imgIndex + 1] * kernel[kernelIndex];
+                                b += pixels[imgIndex + 2] * kernel[kernelIndex];
+                            }
+                        }
+                    }
+
+                    outputPixels[i] = pixels[i] * (1 - factor) + Math.min(255, Math.max(0, r)) * factor;
+                    outputPixels[i + 1] = pixels[i + 1] * (1 - factor) + Math.min(255, Math.max(0, g)) * factor;
+                    outputPixels[i + 2] = pixels[i + 2] * (1 - factor) + Math.min(255, Math.max(0, b)) * factor;
+                    outputPixels[i + 3] = pixels[i + 3];
+                }
+            }
+
+            ctx.putImageData(new ImageData(outputPixels, width, height), 0, 0);
+        }
+
+        /****************************************************
+         * SAVE WITH CORDOVA
+         ****************************************************/
+        function saveWithCordova(base64Data) {
+            return new Promise((resolve, reject) => {
+                const fileName = "Pixo_" + Date.now() + ".png";
+                const folder = cordova.file.externalRootDirectory + "Pictures";
+
+                window.resolveLocalFileSystemURL(folder, dir => {
+                    dir.getFile(fileName, { create: true }, fileEntry => {
+                        fileEntry.createWriter(writer => {
+                            writer.onwriteend = () => {
+                                if (window.plugins.MediaScanner) {
+                                    window.plugins.MediaScanner.scanFile(
+                                        fileEntry.nativeURL,
+                                        () => {
+                                            showToast("✅ Image saved to gallery!");
+                                            resolve(fileEntry.nativeURL);
+                                        },
+                                        () => {
+                                            showToast("✅ Image saved!");
+                                            resolve(fileEntry.nativeURL);
+                                        }
+                                    );
+                                } else {
+                                    showToast("✅ Image saved!");
+                                    resolve(fileEntry.nativeURL);
+                                }
+                            };
+                            writer.onerror = e => reject(e);
+                            writer.write(dataURLtoBlob(base64Data));
+                        }, reject);
+                    }, reject);
+                }, reject);
+            });
+        }
+        closeShareTab.addEventListener('click', hideSharingTab);
+
+        // Overlay click par bhi close ho
+        shareOverlay.addEventListener('click', hideSharingTab);
+
+        // 8. Social buttons ke event listeners
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const platform = e.currentTarget.dataset.platform;
+                await shareToPlatform(platform);
+            });
+        });
+
+        // 9. Platform sharing function
+        async function shareToPlatform(platform) {
+            try {
+                // Image sirf "More" ke liye chahiye
+                let processedImage = null;
+
+                if (platform === 'more') {
+                    processedImage = await generateProcessedImage();
+                }
+
+                showToast(`🔄 Opening ${platform}...`);
+
+                switch (platform) {
+
+                    case 'whatsapp':
+                        shareViaWhatsApp();
+                        break;
+
+                    case 'telegram':
+                        shareViaTelegram();
+                        break;
+
+                    case 'sms':
+                        shareViaSMS();
+                        break;
+
+                    case 'more':
+                        await shareToOtherApps(processedImage);
+                        break;
+
+                    default:
+                        throw new Error("Unknown share platform");
+                }
+
+                // Share panel close
+                setTimeout(hideSharingTab, 800);
+
+            } catch (error) {
+                console.error("Sharing error:", error);
+                showToast("❌ Could not share. Try another option.");
+            }
+        }
+
+
+        const PIXO_APP_LINK = "https://apkpure.com/pixo/com.pixo.appMyTest";
+
+        async function shareViaWhatsApp(imageData) {
+            const message = "Check out this amazing photo I edited with Pixo App! 🎨✨\n" +
+                "Download now 👉 " + PIXO_APP_LINK;
+
+            // Check karein agar browser image share support karta hai
+            if (navigator.share && navigator.canShare) {
+                try {
+                    // 1. Base64 (imageData) ko file mein convert karein
+                    const response = await fetch(imageData);
+                    const blob = await response.blob();
+                    const file = new File([blob], 'pixo_edit.png', { type: 'image/png' });
+
+                    // 2. Check karein ke kya ye file share ho sakti hai
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Pixo App',
+                            text: message
+                        });
+                    } else {
+                        throw new Error("File sharing not supported");
+                    }
+                } catch (error) {
+                    // Fallback: Agar image share na ho sake to sirf text bhej dein
+                    window.location.href = "whatsapp://send?text=" + encodeURIComponent(message);
+                }
+            } else {
+                // Fallback for older browsers: Direct WhatsApp text
+                window.location.href = "whatsapp://send?text=" + encodeURIComponent(message);
+            }
+        }
+
+
+
+
+        function shareViaTelegram() {
+            return new Promise((resolve) => {
+
+                const message =
+                    "Edited with Pixo App 🎨✨\n" +
+                    "Download 👉 " + PIXO_APP_LINK;
+
+                const url =
+                    "tg://msg?text=" + encodeURIComponent(message);
+
+                window.location.href = url;
+                resolve();
+            });
+        }
+
+        function shareViaSMS() {
+            return new Promise((resolve) => {
+
+                const message =
+                    "Check out Pixo App 🎨\n" +
+                    PIXO_APP_LINK;
+
+                window.location.href =
+                    "sms:?body=" + encodeURIComponent(message);
+
+                resolve();
+            });
+        }
+
+
+        function shareToOtherApps(imageData) {
+            return new Promise((resolve) => {
+                if (window.plugins && window.plugins.socialsharing) {
+                    window.plugins.socialsharing.share(
+                        "Check out my photo edited with Pixo App! 🎨",
+                        "Pixo Edited Photo",
+                        imageData,
+                        "https://apkpure.com/pixo/com.pixo.appMyTest",
+                        () => {
+                            showToast("✅ Shared successfully!");
+                            resolve();
+                        },
+                        () => {
+                            showToast("Sharing cancelled");
+                            resolve();
+                        }
+                    );
+                } else if (navigator.share) {
+                    // Web Share API
+                    navigator.share({
+                        title: 'Pixo Edited Photo',
+                        text: 'Check out my photo edited with Pixo App!',
+                        url: window.location.href
+                    }).then(() => {
+                        showToast("✅ Shared successfully!");
+                        resolve();
+                    }).catch(() => {
+                        showToast("Sharing cancelled");
+                        resolve();
+                    });
+                } else {
+                    // Last resort - download again
+                    const a = document.createElement('a');
+                    a.href = imageData;
+                    a.download = 'pixo_edit_' + Date.now() + '.png';
+                    a.click();
+                    showToast("✅ Image ready to share!");
+                    resolve();
+                }
+            });
+        }
+
+        // 11. Helper function: Temporary image save
+        function saveTempImage(imageData) {
+            return new Promise((resolve) => {
+                if (!window.cordova) {
+                    resolve(imageData); // Return base64 for browser
+                    return;
+                }
+
+                const tempFolder = cordova.file.cacheDirectory;
+                const fileName = 'pixo_share_temp.png';
+
+                window.resolveLocalFileSystemURL(tempFolder, dirEntry => {
+                    dirEntry.getFile(fileName, { create: true }, fileEntry => {
+                        fileEntry.createWriter(writer => {
+                            writer.onwriteend = () => resolve(fileEntry.toURL());
+                            writer.write(dataURLtoBlob(imageData));
+                        });
+                    });
+                });
+            });
+        }
+
+
+        document.getElementById('viewInGallery').addEventListener('click', () => {
+            if (window.cordova) {
+                cordova.plugins.diagnostic.switchToSettings(() => {
+                    showToast("Opening gallery...");
+                }, (error) => {
+                    showToast("Cannot open gallery settings");
+                });
+            } else {
+                showToast("Open your device's gallery app");
+            }
+        });
+
+        document.getElementById('editAgain').addEventListener('click', () => {
+            hideSharingTab();
+            // Reset form or show upload prompt
+            uploadInput.value = '';
+            showToast("Upload another image to edit!");
+        });
+
+        // 13. Tab show hone par animation
+        socialShareTab.style.display = 'block';
+
+        function showSharingTab() {
+            // Show overlay first
+            shareOverlay.style.display = 'block';
+
+            // Small delay to ensure overlay is visible
+            setTimeout(() => {
+                shareOverlay.classList.add('active');
+
+
+                socialShareTab.style.display = 'block';
+
+                setTimeout(() => {
+                    socialShareTab.classList.add('active');
+
+
+                    document.body.style.overflow = 'hidden';
+
+                    showToast("✨ Share your creation with friends!");
+                }, 10);
+            }, 10);
+        }
+
+        function hideSharingTab() {
+            // Remove active classes
+            socialShareTab.classList.remove('active');
+
+            // Hide tab first with transition
+            setTimeout(() => {
+                socialShareTab.style.display = 'none';
+
+                // Then hide overlay
+                shareOverlay.classList.remove('active');
+                setTimeout(() => {
+                    shareOverlay.style.display = 'none';
+                }, 300);
+
+                // Enable background scrolling
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+
+        /****************************************************
+         * BASE64 TO BLOB
+         ****************************************************/
+        function dataURLtoBlob(dataURL) {
+            const [meta, data] = dataURL.split(";base64,");
+            const raw = atob(data);
+            const u8 = new Uint8Array(raw.length);
+            for (let i = 0; i < raw.length; i++) u8[i] = raw.charCodeAt(i);
+            return new Blob([u8], { type: "image/png" });
+        }
+        /****************************************************
+         * ABOUT US PAGE FUNCTIONS (RATING, FEEDBACK)
+         ****************************************************/
+        const stars = document.querySelectorAll('.star-rating .star');
+        const ratingInput = document.getElementById('ratingInput');
+        let currentRating = 0;
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', () => {
+                highlightStars(star.dataset.value);
+            });
+
+            star.addEventListener('mouseout', () => {
+                highlightStars(currentRating);
+            });
+
+            star.addEventListener('click', () => {
+                currentRating = star.dataset.value;
+                ratingInput.value = currentRating;
+                highlightStars(currentRating);
+                showToast(`You rated: ${currentRating} stars!`);
+            });
+        });
+
+        const feedbackForm = document.getElementById('feedbackForm');
+        const userNameInput = document.getElementById('userName');
+        const userEmailInput = document.getElementById('userEmail');
+        const feedbackMessageInput = document.getElementById('feedbackMessage');
+
+
+        feedbackForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            showToast("Sending feedback...");
+
+            const templateParams = {
+                from_name: userNameInput.value || "Anonymous",
+                from_email: userEmailInput.value || "anonymous",
+                rating: ratingInput.value,
+                message: feedbackMessageInput.value || "No message provided."
+            };
+
+            emailjs.send('service_s61ngs3', 'template_d176qec', templateParams)
+                .then(function (response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    showToast("✅ Feedback sent successfully!");
+                    // Clear form after successful submission
+                    userNameInput.value = '';
+                    userEmailInput.value = '';
+                    feedbackMessageInput.value = '';
+                    currentRating = 0;
+                    ratingInput.value = 0;
+                    highlightStars(0);
+                }, function (error) {
+                    console.error('FAILED...', error);
+                    showToast("❌ Failed to send feedback.");
+                });
+        });
+        function openGallery() {
+            // 1. Pehle Gallery wala view dikhayen
+            showView('aiGalleryView');
+
+            const container = document.getElementById('galleryContainer');
+            const emptyMsg = document.getElementById('emptyGallery');
+
+            // 2. LocalStorage se images nikalen
+            const savedImages = JSON.parse(localStorage.getItem('pixo_gallery')) || [];
+
+            // 3. Agar images nahi hain to empty message dikhayen
+            if (savedImages.length === 0) {
+                container.innerHTML = '';
+                emptyMsg.style.display = 'block';
+            } else {
+                emptyMsg.style.display = 'grid';
+                emptyMsg.style.display = 'none';
+
+                // 4. Images ko gallery mein load karein
+                container.innerHTML = savedImages.map((item, index) => `
+            <div style="background:#121212; padding:15px; border-radius:15px; text-align:center; border:1px solid #333;">
+                <img src="${item.url}" style="width:100%; border-radius:10px; border:1px solid #ffc400;">
+                <p style="color:#888; font-size:11px; margin:10px 0;">${item.prompt}</p>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button onclick="downloadImage('${item.url}', '${item.prompt}')" style="background:#ffc400; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;"><i class="fas fa-download"></i></button>
+                    <button onclick="deleteImage(${index})" style="background:#ff4444; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
+            }
+        }
+
+        // Delete karne ka function
+        function deleteImage(index) {
+            let savedImages = JSON.parse(localStorage.getItem('pixo_gallery')) || [];
+            savedImages.splice(index, 1);
+            localStorage.setItem('pixo_gallery', JSON.stringify(savedImages));
+            openGallery(); // Gallery refresh karein
+        }
+        function showPixoNotification(message) {
+    const toast = document.getElementById("pixoToast");
+    toast.innerText = message;
+    toast.className = "pixo-toast-hidden pixo-toast-show";
+    
+    // 3 seconds baad hide kar dein
+    setTimeout(function() {
+        toast.className = toast.className.replace("pixo-toast-show", "");
+    }, 3000);
+}
+    </script>
+<script>
+    const DAILY_LIMIT = 8; 
+function checkImageLimit() {
+        const today = new Date().toDateString();
+        let usageData = JSON.parse(localStorage.getItem('pixo_usage')) || { date: today, count: 0 };
+
+        if (usageData.date !== today) {
+            usageData = { date: today, count: 0 };
+        }
+
+        if (usageData.count >= DAILY_LIMIT) {
+            return false;
+        }
+
+        usageData.count++;
+        localStorage.setItem('pixo_usage', JSON.stringify(usageData));
+        updateCreditUI();
+        return true;
+    }
+
+let lastGeneratedImage = null;
+let lastPrompt = "";
+let currentW = 1024;
+let currentH = 1024;
+
+function setRatio(w, h, btn) {
+    currentW = w;
+    currentH = h;
+    const allButtons = document.querySelectorAll('.ratio-btn');
+    allButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+// Download function jo Mobile App aur Browser dono par 100% kaam karegi
+function downloadImage(base64Data, prompt) {
+    if (!base64Data) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous"; 
+    img.src = base64Data;
+
+    img.onload = function() {
+        // Invisible Canvas banana (Gradient ki tarah)
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Convert to safe DataURL
+        const finalData = canvas.toDataURL("image/png");
+
+        if (window.cordova && typeof saveWithCordova === "function") {
+            saveWithCordova(finalData).then(() => {
+             showPixoNotification("✅ Image saved to gallery!");
+            }).catch(err => {
+              showPixoNotification("❌ Save failed");
+            });
+        } else {
+            // Standard Browser/Mobile Download
+            const a = document.createElement("a");
+            a.href = finalData;
+            a.download = `PixoAI_${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    };
+}
+
+
+async function handleAISubmit() {
+    const inputField = document.getElementById('chatInput');
+    const outputDiv = document.getElementById('chatOutput');
+    const paintBtn = document.getElementById('paintBtn');
+    const prompt = inputField.value.trim();
+
+    if (!prompt) return;
+paintBtn.disabled = true; 
+    paintBtn.style.opacity = "0.5";
+    paintBtn.style.cursor = "not-allowed";
+    paintBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    // --- CREDIT LIMIT LOGIC START ---
+if (!checkImageLimit()) {
+    outputDiv.innerHTML = `
+      <div style="text-align:center; color:#ff4444; padding:20px; border-radius:10px; background:#fff0f0; font-family:sans-serif;">
+    <i class="fas fa-exclamation-circle" style="font-size:24px;"></i>
+    <h3 style="margin:10px 0; font-weight:bold; color:#ff4444;">Daily Limit Reached!</h3>
+</div>
+
+    `;
+    paintBtn.disabled = false;
+        paintBtn.style.opacity = "1";
+        paintBtn.style.cursor = "pointer";
+        paintBtn.innerHTML = "Paint";
+    return;
+}
+    updateCreditUI();
+
+    let secondsLeft = 30;
+    outputDiv.innerHTML = `
+        <div id="loader" style="color:#ffc400; text-align:center; padding:20px;">
+            <i class="fas fa-magic fa-spin"></i> Pixo AI is painting<br>
+            <span id="timer" style="font-size:12px; opacity:0.7;">Wait ${secondsLeft}s for result</span>
+        </div>
+    `;
+
+    const timerInterval = setInterval(() => {
+        secondsLeft--;
+        const timerElement = document.getElementById('timer');
+        if (timerElement) timerElement.innerText = `Preparing download link in ${secondsLeft}s...`;
+        if (secondsLeft <= 0) clearInterval(timerInterval);
+    }, 1000);
+
+    const uniqueID = Math.floor(Math.random() * 1000000) + "_" + Date.now();
+    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${currentW}&height=${currentH}&nologo=true&seed=${uniqueID}`;
+
+    setTimeout(() => {
+        clearInterval(timerInterval);
+        fetch(imageUrl)
+            .then(res => res.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64Image = reader.result;
+                    lastGeneratedImage = base64Image;
+                    lastPrompt = prompt;
+
+                    // Local Storage Gallery
+                    let savedImages = JSON.parse(localStorage.getItem('pixo_gallery')) || [];
+                    savedImages.unshift({ url: base64Image, prompt: prompt, date: new Date().toLocaleString() });
+                    localStorage.setItem('pixo_gallery', JSON.stringify(savedImages.slice(0, 20)));
+
+                    outputDiv.innerHTML = `
+                        <div style="text-align:center; animation: fadeIn 0.8s; display:flex; flex-direction:column; align-items:center;">
+                            <img src="${base64Image}" style="width:100%; border-radius:12px; border:4px solid #ffc400; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                            <p style="color:#ffc400; margin-top:10px; font-weight:bold;">✨ Image Created!</p>
+                            
+                            <button class="save-btn" onclick="downloadImage(lastGeneratedImage, lastPrompt)">
+                                <i class="fas fa-download"></i> <span>Save Image</span>
+                            </button>
+                           
+                        </div>
+                    `;
+                    outputDiv.scrollTop = outputDiv.scrollHeight;
+                    paintBtn.disabled = false;
+                    paintBtn.style.opacity = "1";
+                    paintBtn.style.cursor = "pointer";
+                    paintBtn.innerHTML = "Paint";
+                };
+
+                reader.readAsDataURL(blob);
+            })
+            .catch(err => {
+                outputDiv.innerHTML = `<div style="text-align:center; color:#ff4444; padding:20px;"><p>❌ Error. Try again.</p></div>`;
+           // Error ki surat mein bhi button wapas theek hona chahiye
+             paintBtn.disabled = false;
+                paintBtn.style.opacity = "1";
+                paintBtn.style.cursor = "pointer";
+                paintBtn.innerHTML = "Paint";
+            });
+
+    }, 30000); 
+}
+function updateCreditUI() {
+    const today = new Date().toDateString();
+    let usageData = JSON.parse(localStorage.getItem('pixo_usage')) || { date: today, count: 0 };
+    if (usageData.date !== today) usageData = { date: today, count: 0 };
+
+    const remaining = DAILY_LIMIT - usageData.count;
+    const displayElement = document.getElementById('creditCount');
+    if (displayElement) displayElement.innerText = remaining;
+}
+updateCreditUI();
+function toggleHelp() {
+    const modal = document.getElementById('helpModal');
+    if (modal.style.display === 'none' || modal.style.display === '') {
+        modal.style.display = 'flex';
+    } else {
+        modal.style.display = 'none';
+    }
+}
+</script>
+</body>
+
+</html>
